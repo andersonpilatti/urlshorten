@@ -1,8 +1,10 @@
 const express = require('express');
 const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
 require('dotenv').config();
 
 const { connectDB } = require('./config/database');
+const swaggerSpecs = require('./config/swagger');
 const urlRoutes = require('./routes/urlRoutes');
 
 const app = express();
@@ -20,6 +22,13 @@ if (process.env.NODE_ENV !== 'production') {
     next();
   });
 }
+
+// Documentação Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs, {
+  explorer: true,
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: "URL Shortener API - Documentação"
+}));
 
 // Rota de health check
 app.get('/health', (req, res) => {
@@ -59,7 +68,7 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`🚀 Servidor rodando na porta ${PORT}`);
       console.log(`📍 Health check: http://localhost:${PORT}/health`);
-      console.log(`📖 Documentação: http://localhost:${PORT}/api/docs`);
+      console.log(`� Documentação Swagger: http://localhost:${PORT}/api-docs`);
     });
   } catch (error) {
     console.error('Erro ao iniciar servidor:', error);
